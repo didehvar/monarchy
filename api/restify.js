@@ -4,6 +4,7 @@ var bunyan = require('bunyan');
 var log = bunyan.createLogger({ name: 'monarchy' });
 
 var server = restify.createServer({
+  name: 'monarchy',
   version: '0.0.1',
   log: log
 });
