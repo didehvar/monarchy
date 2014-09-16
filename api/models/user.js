@@ -110,7 +110,7 @@ var UserSchema = new Schema({
     select: false,
     validate: validators.password
   },
-  salt: { type:String, select: false },
+  salt: { type: String, select: false },
 
   rank: { type: String, default: '' },
 
@@ -161,7 +161,7 @@ UserSchema.pre('save', function(next) {
 // callback returns (error || null, password === user password)
 UserSchema.methods.checkPassword = function(password, callback) {
   if (!this.password || !this.salt) {
-    return callback(i18n.__('user.login.incorrect'));
+    return callback(i18n.__('user.validate.invalid'));
   }
 
   var currentPass = this.password;
