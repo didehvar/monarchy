@@ -30,27 +30,9 @@ var validators = {
   }],
   email: [{
     validator: function(val, callback) {
-      var emails = [];
-      var error = false;
-
       _.each(val, function(email) {
         if (!email || !email.address || email.address === '') {
-          return callback(false);
-        }
-
-        emails.push(email.address);
-      });
-
-      mongoose.model('User').find({ 'emails.address': { '$in': emails }}, function(err, users) {
-        return callback(err || users.length === 0);
-      });
-    },
-    msg: i18n.__('user.email.exists')
-  }, {
-    validator: function(val, callback) {
-      _.each(val, function(email) {
-        if (!email || !email.address || email.address === '') {
-          return callback(false);
+          return callback(true); // wrong error
         }
 
         if (!validator.isEmail(email.address)) {
@@ -65,7 +47,7 @@ var validators = {
     validator: function(val, callback) {
       _.each(val, function(email) {
         if (!email || !email.address || email.address === '') {
-          return callback(false);
+          return callback(true); // wrong error
         }
 
         if (!validator.isLength(email.address, 0, 254)) {
