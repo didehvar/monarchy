@@ -70,7 +70,7 @@ exports.put = function update(req, res, next) {
 
   async.eachSeries(users, function(u, callback) {
     User.findOne(
-      { username: req.params.username || u.username },
+      { username: u.username || req.params.username },
       function(err, user) {
         var errGroup = {};
         errorHelper.filterMongo(err, errGroup);
@@ -91,6 +91,40 @@ exports.put = function update(req, res, next) {
 
           return callback();
         });
+      }
+    );
+  }, function(err) {
+    if (err) {
+      return req.log.fatal(err);
+    }
+
+    if (errors.length > 0) {
+      res.json({ errors: errors });
+    } else {
+      res.send(204);
+    }
+
+    return next();
+  });
+}
+
+exports.del = function del(req, res, next) {
+  var users = req.body.users;
+  var errors = [];
+
+  if (!Array.isArray(users)) {
+    users = [users];
+  }
+
+  async.eachSeries(users, function(u, callback) {
+    User.findOneAndRemove(
+      { username: u.username || req.params.username },
+      function(err) {
+        if (err) {
+          errors.push(errorHelper.filterMongo(err));
+        }
+
+        return callback();
       }
     );
   }, function(err) {
