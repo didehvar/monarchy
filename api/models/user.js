@@ -9,13 +9,6 @@ var i18n = require('i18n');
 var validators = {
   username: [
   {
-    validator: function(val, callback) {
-      mongoose.model('User').find({ username: val }, function(err, users) {
-        callback(err || users.length === 0);
-      });
-    },
-    msg: i18n.__('user.username.exists')
-  }, {
     validator: function(val) {
       if (!val) {
         return false;
