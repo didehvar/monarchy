@@ -48,16 +48,12 @@ exports.post = function create(req, res, next) {
   });
 }
 
-exports.getOne = function read(req, res, next) {
-  User.findOne({ username: req.params.username }, function(err, user) {
-    var errors = errorHelper.filterMongo(err);
-
-    if (errors) {
-      res.json({ errors: errors });
-    } else if (user) {
-      res.json(user);
+exports.get = function read(req, res, next) {
+  User.find(function(err, users) {
+    if (err) {
+      res.json(errorHelper.filterMongo(err));
     } else {
-      res.send(404);
+      res.json(users);
     }
 
     return next();
@@ -106,6 +102,22 @@ exports.put = function update(req, res, next) {
       res.json({ errors: errors });
     } else {
       res.send(204);
+    }
+
+    return next();
+  });
+}
+
+exports.getOne = function readOne(req, res, next) {
+  User.findOne({ username: req.params.username }, function(err, user) {
+    var errors = errorHelper.filterMongo(err);
+
+    if (errors) {
+      res.json({ errors: errors });
+    } else if (user) {
+      res.json(user);
+    } else {
+      res.send(404);
     }
 
     return next();
