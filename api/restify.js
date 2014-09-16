@@ -17,7 +17,7 @@ var server = module.exports = restify.createServer({
   log: bunyan.createLogger({
     name: 'monarchy',
     streams: [{
-      level: 'error',
+      level: 'debug',
       type: 'raw',
       stream: process.stdout
     }]
