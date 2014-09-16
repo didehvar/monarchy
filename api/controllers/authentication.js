@@ -20,6 +20,10 @@ passport.use(new LocalStrategy(
       }
 
       user.checkPassword(password, function(err, valid) {
+        if (err) {
+          return done({ error: err });
+        }
+
         if (!valid) {
           return done(null, false, { error: i18n.__('user.login.incorrect') });
         }
