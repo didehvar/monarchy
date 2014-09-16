@@ -123,3 +123,17 @@ exports.getOne = function readOne(req, res, next) {
     return next();
   });
 }
+
+exports.delOne = function delOne(req, res, next) {
+  User.findOneAndRemove({ username: req.params.username }, function(err, user) {
+    if (err) {
+      res.json({ errors: errorHelper.filterMongo(err) });
+    } else if (user) {
+      res.send(204);
+    } else {
+      res.send(404);
+    }
+
+    return next();
+  });
+}
