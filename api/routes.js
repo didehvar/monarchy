@@ -7,4 +7,5 @@ server.get('/', site.index);
 
 // user routes
 server.post('/users', user.post);
+server.put('/users', user.put);
 server.get('/users/:username', user.get);
