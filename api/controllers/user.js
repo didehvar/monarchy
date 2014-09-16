@@ -3,18 +3,8 @@ var underscore = require('underscore');
 var async = require('async');
 var _ = require('underscore');
 
+var errorHelper = require('../helpers/error');
 var User = require('../models/user');
-
-// takes a mongoose error and appends it to an array (errors)
-function ifMongoError(error, errorGroup) {
-  if (!error) {
-    return;
-  }
-
-  _.each(error.errors, function(e) {
-    return errorGroup[e.path] = e.message;
-  });
-}
 
 exports.create = function create(req, res, next) {
   var users = req.body.users;
@@ -35,7 +25,7 @@ exports.create = function create(req, res, next) {
     _.extend(user, u);
 
     user.save(function(error) {
-      ifMongoError(error, errorGroup);
+      errorHelper.appendMongo(error, errorGroup);
 
       if (!_.isEmpty(errorGroup)) {
         errors.push(errorGroup);
