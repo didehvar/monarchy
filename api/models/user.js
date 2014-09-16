@@ -8,112 +8,109 @@ var i18n = require('i18n');
 
 var validators = {
   username: [
-    {
-      validator: function(val) {
-        return val && val !== '';
-      },
-      msg: i18n.__('user.username.blank')
+  {
+    validator: function(val, callback) {
+      mongoose.model('User').find({ username: val }, function(err, users) {
+        callback(err || users.length === 0);
+      });
     },
-    {
-      validator: function(val) {
-        return validator.isLength(val, 3, 20);
-      },
-      msg: i18n.__('user.username.length')
+    msg: i18n.__('user.username.exists')
+  }, {
+    validator: function(val) {
+      if (!val) {
+        return false;
+      }
+
+      return validator.isAlphanumericDash(val[0]);
     },
-    {
-      validator: function(val) {
-        return validator.isAlphanumericDash(val);
-      },
-      msg: i18n.__('user.username.characters')
+    msg: i18n.__('user.username.begin_alphanumeric')
+  }, {
+    validator: function(val) {
+      return validator.isAlphanumericDash(val);
     },
-    {
-      validator: function(val) {
-        if (!val) {
-          return false;
+    msg: i18n.__('user.username.characters')
+  }, {
+    validator: function(val) {
+      return validator.isLength(val, 3, 20);
+    },
+    msg: i18n.__('user.username.length')
+  }],
+  email: [{
+    validator: function(val, callback) {
+      var emails = [];
+      var error = false;
+
+      _.each(val, function(email) {
+        if (!email || !email.address || email.address === '') {
+          return callback(false);
         }
 
-        return validator.isAlphanumericDash(val[0]);
-      },
-      msg: i18n.__('user.username.begin_alphanumeric')
+        emails.push(email.address);
+      });
+
+      mongoose.model('User').find({ 'emails.address': { '$in': emails }}, function(err, users) {
+        return callback(err || users.length === 0);
+      });
     },
-    {
-      validator: function(val, callback) {
-        mongoose.model('User').find({ username: val }, function(err, users) {
-          callback(err || users.length === 0);
-        });
-      },
-      msg: i18n.__('user.username.exists')
-    }
-  ],
-  email: [
-    {
-      validator: function(val) {
-        if (!val || val.length === 0) {
-          return false;
+    msg: i18n.__('user.email.exists')
+  }, {
+    validator: function(val, callback) {
+      _.each(val, function(email) {
+        if (!email || !email.address || email.address === '') {
+          return callback(false);
         }
 
-        _.each(val, function(email) {
-          if (!email.address || email.address === '') {
-            return false;
-          }
-        });
+        if (!validator.isEmail(email.address)) {
+          return callback(false);
+        }
+      });
 
-        return true;
-      },
-      msg: i18n.__('user.email.blank')
+      return callback(true);
     },
-    {
-      validator: function(val) {
-        _.each(val, function(email) {
-          if (!validator.isLength(email.address, 0, 254)) {
-            return false;
-          }
-        });
+    msg: i18n.__('user.email.invalid')
+  }, {
+    validator: function(val, callback) {
+      _.each(val, function(email) {
+        if (!email || !email.address || email.address === '') {
+          return callback(false);
+        }
 
-        return true;
-      },
-      msg: i18n.__('user.email.length')
-    },
-    {
-      validator: function(val) {
-        _.each(val, function(email) {
-          if (!validator.isEmail(email.address)) {
-            return false;
-          }
-        });
+        if (!validator.isLength(email.address, 0, 254)) {
+          return callback(false);
+        }
+      });
 
-        return true;
-      },
-      msg: i18n.__('user.email.invalid')
+      return callback(true);
     },
-    {
-      validator: function(val, callback) {
-        var emails = [];
-        _.each(val, function(email) {
-          emails.push(email.address);
-        });
+    msg: i18n.__('user.email.length')
+  }, {
+    validator: function(val, callback) {
+      if (!val || val.length === 0) {
+        return callback(false);
+      }
 
-        mongoose.model('User').find({ 'emails.address': { '$in': emails }}, function(err, users) {
-          callback(err || users.length === 0);
-        });
-      },
-      msg: i18n.__('user.email.exists')
-    }
-  ],
-  password: [
-    {
-      validator: function(val) {
-        return val && val !== '';
-      },
-      msg: i18n.__('user.password.blank')
+      _.each(val, function(email) {
+        if (!email || !email.address || email.address === '') {
+          return callback(false);
+        }
+      });
+
+      return callback(true);
     },
-    {
-      validator: function(val) {
-        return validator.isLength(val, 8);
-      },
-      msg: i18n.__('user.password.length')
-    }
-  ]
+    msg: i18n.__('user.email.blank')
+  }],
+  password: [{
+    validator: function(val) {
+      return validator.isLength(val, 8);
+    },
+    msg: i18n.__('user.password.length')
+  },
+  {
+    validator: function(val) {
+      return val && val !== '';
+    },
+    msg: i18n.__('user.password.blank')
+  }]
 }
 
 var UserSchema = new Schema({
