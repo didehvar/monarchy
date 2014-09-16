@@ -24,6 +24,10 @@ exports.post = function create(req, res, next) {
     var user = new User;
     _.extend(user, u);
 
+    if (users.length === 1 && req.params.username) {
+      user.username = req.params.username;
+    }
+
     user.save(function(err) {
       errorHelper.filterMongo(err, errorGroup);
 

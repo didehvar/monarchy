@@ -11,5 +11,6 @@ server.get('/users', user.get);
 server.put('/users', user.put);
 server.del('/users', user.del);
 
+server.post('/users/:username', user.post);
 server.get('/users/:username', user.getOne);
 server.del('/users/:username', user.delOne);
