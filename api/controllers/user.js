@@ -6,7 +6,7 @@ var _ = require('underscore');
 var errorHelper = require('../helpers/error');
 var User = require('../models/user');
 
-exports.create = function create(req, res, next) {
+exports.post = function create(req, res, next) {
   var users = req.body.users;
   var errors = [];
 
@@ -24,8 +24,8 @@ exports.create = function create(req, res, next) {
     var user = new User;
     _.extend(user, u);
 
-    user.save(function(error) {
-      errorHelper.appendMongo(error, errorGroup);
+    user.save(function(err) {
+      errorHelper.filterMongo(err, errorGroup);
 
       if (!_.isEmpty(errorGroup)) {
         errors.push(errorGroup);
@@ -33,15 +33,30 @@ exports.create = function create(req, res, next) {
 
       return callback();
     });
-  }, function(error) {
-    if (error) {
-      return req.log.fatal(error);
+  }, function(err) {
+    if (err) {
+      return req.log.fatal(err);
     }
 
     if (errors.length > 0) {
       res.json({ errors: errors });
     } else {
       res.send(201);
+    }
+
+    return next();
+  });
+}
+
+exports.get = function read(req, res, next) {
+  User.findOne({ username: req.params.username }, function(err, user) {
+    var errors = errorHelper.filterMongo(err);
+    if (errors) {
+      res.json({ errors: errors });
+    } else if (user) {
+      res.json(user);
+    } else {
+      res.send(404);
     }
 
     return next();

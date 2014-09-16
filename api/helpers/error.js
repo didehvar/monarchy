@@ -1,12 +1,16 @@
 var _ = require('underscore');
 
-// takes a mongoose error and appends it to an array (errorGroup)
-exports.appendMongo = function helperAppendMongo(error, errorGroup) {
+// takes mongoose errors and appends them to an optional returned array (errors)
+exports.filterMongo = function helperfilterMongo(error, errors) {
   if (!error) {
-    return;
+    return null;
   }
 
+  errors = (typeof errors === 'undefined') ? {} : errors;
+
   _.each(error.errors, function(e) {
-    return errorGroup[e.path] = e.message;
+    errors[e.path] = e.message;
   });
+
+  return errors;
 }

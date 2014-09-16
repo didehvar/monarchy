@@ -6,4 +6,5 @@ var user = require('./controllers/user');
 server.get('/', site.index);
 
 // user routes
-server.post('/users', user.create);
+server.post('/users', user.post);
+server.get('/users/:username', user.get);
