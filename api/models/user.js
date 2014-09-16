@@ -150,6 +150,16 @@ var UserSchema = new Schema({
   twitch: { type: String },
 });
 
+UserSchema.set('toJSON', {
+  transform: function(doc, ret, options) {
+    // never reveal password or salt
+    delete ret.password;
+    delete ret.salt;
+
+    return ret;
+  }
+});
+
 UserSchema.pre('save', function(next) {
   var user = this;
 
