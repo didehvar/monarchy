@@ -48,7 +48,7 @@ exports.post = function create(req, res, next) {
   });
 }
 
-exports.get = function read(req, res, next) {
+exports.getOne = function read(req, res, next) {
   User.findOne({ username: req.params.username }, function(err, user) {
     var errors = errorHelper.filterMongo(err);
 
