@@ -1,17 +1,22 @@
-var server = module.parent.exports;
+var app = module.parent.exports;
 
 var site = require('./controllers/site');
 var user = require('./controllers/user');
+var auth = require('./controllers/authentication');
 
-server.get('/', site.index);
+app.get('/', site.index);
 
 // user routes
-server.post('/users', user.post);
-server.get('/users', user.get);
-server.put('/users', user.put);
-server.del('/users', user.del);
+app.post('/users', user.post);
+app.get('/users', user.get);
+app.put('/users', user.put);
+app.delete('/users', user.del);
 
-server.post('/users/:username', user.post);
-server.get('/users/:username', user.getOne);
-server.put('/users/:username', user.put);
-server.del('/users/:username', user.del);
+app.post('/users/:username', user.post);
+app.get('/users/:username', user.getOne);
+app.put('/users/:username', user.put);
+app.delete('/users/:username', user.del);
+
+// -- login routes
+
+app.post('/login', auth.login);

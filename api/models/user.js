@@ -158,7 +158,12 @@ UserSchema.pre('save', function(next) {
   });
 });
 
+// callback returns (error || null, password === user password)
 UserSchema.methods.checkPassword = function(password, callback) {
+  if (!this.password || !this.salt) {
+    return callback(i18n.__('user.login.incorrect'));
+  }
+
   var currentPass = this.password;
 
   crypto.pbkdf2(password, this.salt, 64000, 256, function(err, derivedKey) {

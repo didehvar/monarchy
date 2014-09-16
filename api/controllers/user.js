@@ -1,7 +1,7 @@
-var restify = require('restify');
 var underscore = require('underscore');
 var async = require('async');
 var _ = require('underscore');
+var i18n = require('i18n');
 
 var errorHelper = require('../helpers/error');
 var User = require('../models/user');
@@ -15,6 +15,11 @@ exports.post = function create(req, res, next) {
   }
 
   async.eachSeries(users, function(u, callback) {
+    if (!u || !u.emails) {
+      errors.push({ error: i18n.__('request.invalid')});
+      return callback();
+    }
+
     var errorGroup = {};
 
     if (!Array.isArray(u.emails)) {
@@ -43,9 +48,9 @@ exports.post = function create(req, res, next) {
     }
 
     if (errors.length > 0) {
-      res.json({ errors: errors });
+      res.status(500).json({ errors: errors });
     } else {
-      res.send(201);
+      res.status(201).end();
     }
 
     return next();
@@ -105,7 +110,7 @@ exports.put = function update(req, res, next) {
     if (errors.length > 0) {
       res.json({ errors: errors });
     } else {
-      res.send(204);
+      res.status(204).end();
     }
 
     return next();
@@ -139,7 +144,7 @@ exports.del = function del(req, res, next) {
     if (errors.length > 0) {
       res.json({ errors: errors });
     } else {
-      res.send(204);
+      res.status(204).end();
     }
 
     return next();
@@ -155,7 +160,7 @@ exports.getOne = function readOne(req, res, next) {
     } else if (user) {
       res.json(user);
     } else {
-      res.send(404);
+      res.status(404).end();
     }
 
     return next();
