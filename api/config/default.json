@@ -3,5 +3,8 @@
     "token": {
       "timeout": 3600
     }
+  },
+  "session": {
+    "secret": "PmY%@wRhM7m^9SIAXO*MXyVt1&2%IdcU"
   }
 }

@@ -7,6 +7,7 @@ var LocalStrategy = require('passport-local').Strategy;
 var BearerStrategy = require('passport-http-bearer').Strategy;
 // var BasicStrategy = require('passport-http').BasicStrategy;
 var ClientPasswordStrategy = require('passport-oauth2-client-password').Strategy;
+var PublicClientStrategy = require('passport-oauth2-public-client').Strategy;
 
 var User = require('../models/user');
 var Client = require('../models/client');
@@ -25,35 +26,39 @@ passport.deserializeUser(function(id, done) {
 });
 
 // -- local strategy -- //
-// passport.use(new LocalStrategy(
-//   function(username, password, done) {
-//     if (!username || !password) {
-//       return done(null, false);
-//     }
-//
-//     User.findOne({ username: username }, '+password +salt', function(err, user) {
-//       if (err) {
-//         return done(err);
-//       }
-//
-//       if (!user) {
-//         return done(null, false, { error: i18n.__('user.login.incorrect') });
-//       }
-//
-//       user.checkPassword(password, function(err, valid) {
-//         if (err) {
-//           return done({ error: err });
-//         }
-//
-//         if (!valid) {
-//           return done(null, false, { error: i18n.__('user.login.incorrect') });
-//         }
-//
-//         return done(err, user);
-//       });
-//     });
-//   }
-// ));
+passport.use(new LocalStrategy(
+  function(username, password, done) {
+    debug('local attempt: %s, %s', username, password);
+    if (!username || !password) {
+      return done(null, false);
+    }
+
+    User.findOne({ username: username }, '+password +salt', function(err, user) {
+      if (err) {
+        return done(err);
+      }
+
+      if (!user) {
+        return done(null, false, { error: i18n.__('user.login.incorrect') });
+      }
+
+      user.checkPassword(password, function(err, valid) {
+        if (err) {
+          return done({ error: err });
+        }
+
+        if (!valid) {
+          return done(null, false, { error: i18n.__('user.login.incorrect') });
+        }
+
+        user.password = undefined;
+        user.salt = undefined;
+
+        return done(null, user);
+      });
+    });
+  }
+));
 
 // -- basic strategy --
 // passport.use(new BasicStrategy(
@@ -90,6 +95,28 @@ passport.use(new ClientPasswordStrategy(
     });
   }
 ));
+
+// -- public client strategy --
+passport.use(new PublicClientStrategy(
+  function(id, done) {
+    debug('public client attempt by: %s', id);
+    Client.findOne({ id: id }, function(err, client) {
+      if (err) {
+        return done(err);
+      }
+
+      if (!client) {
+        return done(null, false);
+      }
+
+      if (client.secret) {
+        return done(null, false);
+      }
+
+      return done(null, client);
+    });
+  }
+))
 
 // -- bearer strategy --
 passport.use(new BearerStrategy(
@@ -130,6 +157,15 @@ passport.use(new BearerStrategy(
     });
   }
 ));
+
+exports.login = [
+  passport.authenticate('local', { session: false })
+  // function login(req, res, next) {
+  //   res.json({
+  //     success: req.__('user.authenticated')
+  //   });
+  // }
+];
 
 // exports.login = function login(req, res, next) {
 //   passport.authenticate('local', { session: false }, function(err, user, info) {

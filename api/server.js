@@ -3,6 +3,7 @@ var i18n = require('i18n');
 var mongoose = require('mongoose');
 var passport = require('passport');
 var debug = require('debug')('monarchy:server');
+var config = require('config');
 
 i18n.configure({
   locales: ['en'],
@@ -15,17 +16,22 @@ mongoose.Error.messages.general.required = i18n.__('database.{PATH}.required');
 var app = module.exports = express();
 
 app.use(require('body-parser').json());
+app.use(require('body-parser').urlencoded({ extended: true }));
+app.use(require('express-session')({
+  secret: config.get('session.secret'),
+  resave: true,
+  saveUninitialized: true
+}));
 app.use(i18n.init);
 app.use(passport.initialize());
 
-// app should only accept json
-// app.use(function(req, res, next) {
-//   if (req.get('Content-Type') !== 'application/json') {
-//     return res.json({ error: res.__('request.not_json')});
-//   }
-//
-//   next();
-// });
+if (process.env.NODE_ENV === 'development') {
+  app.use(function(req, res, next) {
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Headers', 'X-Requested-With');
+    next();
+  });
+}
 
 require('./config/validator')();
 require('./routes');

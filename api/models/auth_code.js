@@ -20,6 +20,11 @@ var AuthCodeSchema = new Schema({
     required: true
   },
 
+  redirect: {
+    type: String,
+    required: true
+  },
+
   scope: {
     type: String,
     required: true

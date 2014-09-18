@@ -3,12 +3,13 @@ var async = require('async');
 var _ = require('underscore');
 var i18n = require('i18n');
 var passport = require('passport');
+var debug = require('debug')('monarchy:con:user');
 
 var errorHelper = require('../helpers/error');
 var User = require('../models/user');
 
 exports.post = [
-  passport.authenticate('bearer', { session: false }),
+  // passport.authenticate('bearer', { session: false }),
   function create(req, res, next) {
     var users = req.body.users;
     var errors = [];
@@ -47,16 +48,14 @@ exports.post = [
       });
     }, function(err) {
       if (err) {
-        return req.log.fatal(err);
+        return next(err);
       }
 
       if (errors.length > 0) {
-        res.status(500).json({ errors: errors });
-      } else {
-        res.status(201).end();
+        return res.status(400).json({ errors: errors });
       }
 
-      return next();
+      res.sendStatus(201);
     });
   }
 ];
@@ -66,12 +65,10 @@ exports.get = [
   function read(req, res, next) {
     User.find(function(err, users) {
       if (err) {
-        res.json(errorHelper.filterMongo(err));
-      } else {
-        res.json(users);
+        return res.json(errorHelper.filterMongo(err));
       }
 
-      return next();
+      res.json(users);
     });
   }
 ];
@@ -113,16 +110,14 @@ exports.put = [
       );
     }, function(err) {
       if (err) {
-        return req.log.fatal(err);
+        return next(err);
       }
 
       if (errors.length > 0) {
-        res.json({ errors: errors });
-      } else {
-        res.status(204).end();
+        return res.status(400).json({ errors: errors });
       }
 
-      return next();
+      res.sendStatus(204);
     });
   }
 ];
@@ -150,16 +145,14 @@ exports.del = [
       );
     }, function(err) {
       if (err) {
-        return req.log.fatal(err);
+        return next(err);
       }
 
       if (errors.length > 0) {
-        res.json({ errors: errors });
-      } else {
-        res.status(204).end();
+        return res.json({ errors: errors });
       }
 
-      return next();
+      res.sendStatus(204);
     });
   }
 ];
@@ -171,14 +164,14 @@ exports.getOne = [
       var errors = errorHelper.filterMongo(err);
 
       if (errors) {
-        res.json({ errors: errors });
-      } else if (user) {
-        res.json(user);
-      } else {
-        res.status(404).end();
+        return res.json({ errors: errors });
       }
 
-      return next();
+      if (user) {
+        return res.json(user);
+      }
+
+      res.sendStatus(404);
     });
   }
 ];

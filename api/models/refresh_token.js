@@ -1,7 +1,7 @@
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
-var AccessTokenSchema = new Schema({
+var RefreshTokenSchema = new Schema({
   clientId: {
     type: Schema.Types.ObjectId,
     ref: 'Client'
@@ -30,4 +30,4 @@ var AccessTokenSchema = new Schema({
   }
 });
 
-module.exports = mongoose.model('AccessToken', AccessTokenSchema);
+module.exports = mongoose.model('RefreshToken', RefreshTokenSchema);

@@ -112,7 +112,7 @@ var UserSchema = new Schema({
   },
   salt: { type: String, select: false },
 
-  rank: { type: String, default: '' },
+  scope: { type: String, default: 'read' },
 
   steamId: { type: String },
   steamAvatars: [String],
