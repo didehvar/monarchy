@@ -1,0 +1,7 @@
+{
+  "oauth": {
+    "token": {
+      "timeout": 3600
+    }
+  }
+}

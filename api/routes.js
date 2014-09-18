@@ -1,8 +1,12 @@
 var app = module.parent.exports;
 
+var passport = require('passport'); // TODO: move to controller
+var debug = require('debug')('monarchy:routes');
+
 var site = require('./controllers/site');
 var user = require('./controllers/user');
-var auth = require('./controllers/authentication');
+var auth = require('./controllers/auth');
+var oauth = require('./controllers/oauth');
 
 app.get('/', site.index);
 
@@ -17,6 +21,15 @@ app.get('/users/:username', user.getOne);
 app.put('/users/:username', user.put);
 app.delete('/users/:username', user.del);
 
-// -- login routes
+// auth routes
+app.post('/oauth/token', oauth.token);
 
-app.post('/login', auth.login);
+app.get('/userInfo', passport.authenticate('bearer', { session: false }),
+  function(req, res) {
+    res.json({
+      user_id: req.user._id,
+      name: req.user.username,
+      scope: req.authInfo.scope
+    });
+  }
+);
