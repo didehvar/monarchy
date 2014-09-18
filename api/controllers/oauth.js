@@ -49,7 +49,7 @@ server.grant(oauth2orize.grant.code(function (client, redirectURI, user, ares, d
 // exchange password for an access token
 server.exchange(oauth2orize.exchange.password(
   function(client, username, password, scope, done) {
-    debug('exchanging password (%s) (%s) (%s)', client, username, scope);
+    debug('exchanging password (%s) (%s) (%s)', client, username, password);
 
     User.findOne({ username: username }, '+password +salt', function(err, user) {
       if (err) {
