@@ -12,9 +12,10 @@ function validateRequest(req, res, next) {
   var payload = req.query.sso;
   var sig = req.query.sid;
 
-  var hmac = crypto.createHmac('sha256', config.get('discourse.sso.secret')).
-                    update(payload).
-                    digest('hex');
+  var hmac = crypto.createHmac('sha256', process.env.DISCOURSE_SECRET ||
+                                         config.get('discourse.sso.secret'))
+                   .update(payload)
+                   .digest('hex');
 
   if (hmac !== sig) {
     return next(i18n.__('sso.invalid'));
@@ -59,9 +60,10 @@ exports.login = [
       'username': req.user.username
     }), 'utf8').toString('base64');
 
-    var hmac = crypto.createHmac('sha256', config.get('discourse.sso.secret')).
-                      update(payload).
-                      digest('hex');
+    var hmac = crypto.createHmac('sha256', process.env.DISCOURSE_SECRET ||
+                                           config.get('discourse.sso.secret'))
+                     .update(payload)
+                     .digest('hex');
 
     var params = querystring.stringify({
       'sso': payload,

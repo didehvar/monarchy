@@ -20,7 +20,7 @@ var app = module.exports = express();
 app.use(require('body-parser').json());
 app.use(require('body-parser').urlencoded({ extended: true }));
 app.use(require('express-session')({
-  secret: config.get('session.secret'),
+  secret: process.env.SESSION_SECRET || config.get('session.secret'),
   resave: true,
   saveUninitialized: true
 }));
