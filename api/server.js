@@ -3,6 +3,8 @@ var i18n = require('i18n');
 var mongoose = require('mongoose');
 var passport = require('passport');
 var debug = require('debug')('monarchy:server');
+
+process.env.NODE_CONFIG_DIR = __dirname + '/config';
 var config = require('config');
 
 i18n.configure({

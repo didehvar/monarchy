@@ -6,5 +6,11 @@
   },
   "session": {
     "secret": "PmY%@wRhM7m^9SIAXO*MXyVt1&2%IdcU"
+  },
+  "discourse": {
+    "url": "https://discourse.arrowesports.com",
+    "sso": {
+      "secret": "hL#$lmsekFhqJc4X%sfnyGtjsV$Q8*1I"
+    }
   }
 }

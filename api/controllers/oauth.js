@@ -392,5 +392,6 @@ exports.public_token = [
 
 exports.revoke_token = [
   passport.authenticate('bearer', { session: false }),
-  revokeToken
+  revokeToken,
+  server.errorHandler()
 ];

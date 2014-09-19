@@ -7,6 +7,7 @@ var site = require('./controllers/site');
 var user = require('./controllers/user');
 var auth = require('./controllers/auth');
 var oauth = require('./controllers/oauth');
+var sso = require('./controllers/sso');
 
 app.get('/api/', site.index);
 
@@ -29,12 +30,6 @@ app.post('/api/oauth/public_token', oauth.public_token);
 app.post('/api/oauth/revoke', oauth.revoke_token);
 app.post('/api/oauth/decision', oauth.decision);
 
-app.get('/api/userInfo', passport.authenticate('bearer', { session: false }),
-  function(req, res) {
-    res.json({
-      user_id: req.user._id,
-      name: req.user.username,
-      scope: req.authInfo.scope
-    });
-  }
-);
+// sso routes
+app.get('/api/sso', sso.login);
+app.get('/api/sso/validate', sso.validate);
