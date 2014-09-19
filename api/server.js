@@ -43,6 +43,6 @@ app.use(function(err, req, res, next) {
   next(err);
 });
 
-var server = app.listen(8080, function() {
+var server = app.listen(config.get('port'), function() {
   console.log('listening at %s:%s', server.address().address, server.address().port);
 });
